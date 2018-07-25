@@ -86,7 +86,10 @@ class BroadlinkPowerSensor(Entity):
             err = response[0x22] | (response[0x23] << 8)
             if err == 0:
                 payload = self._device.decrypt(bytes(response[0x38:]))
-                energy = int(int(hex(payload[7] * 256 + payload[6])[2:]) + int(hex(payload[5])[2:]) / 100)
+                if type(payload[0x07]) == int:
+                   energy = int(hex(payload[0x07] * 256 + payload[0x06])[2:]) + int(hex(payload[0x05])[2:])/100.0
+                else:
+                   energy = int(hex(ord(payload[0x07]) * 256 + ord(payload[0x06]))[2:]) + int(hex(ord(payload[0x05]))[2:])/100.0
                 self._state = energy
             else:
                 self._state = 0
